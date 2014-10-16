@@ -1,0 +1,223 @@
+<!DOCTYPE HTML>
+
+<html>
+	<head>
+	<meta charset=utf-8>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<title>Web Mail</title>
+		<script type="text/javascript">
+			mailBoxType="Inbox";
+
+			function loadDoc()
+			{
+				var xmlhttp;
+				if (window.XMLHttpRequest)
+				{ // code for IE7+, Firefox, Chrome,etc. 
+					xmlhttp = new XMLHttpRequest(); 
+				}
+				else
+				{ // code for IE6, IE5 
+				 	xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); 
+				}
+				xmlhttp.onreadystatechange = function()
+				{ 
+				 	if (xmlhttp.readyState == 4 && xmlhttp.status ==200)
+					{ 
+				  	document.getElementById('emailist').innerHTML=xmlhttp.responseText;
+				 	} 
+				}
+				xmlhttp.open("GET","handleEmailDisplay.php?mailbox="+mailBoxType+"&lastRecord="+lastRecord, true);
+				xmlhttp.send();
+			}
+			
+			function disableAll()
+			{
+				document.getElementById('delete').disabled = true;
+				document.getElementById('move').disabled = true;
+				document.getElementById('move2').disabled = true;
+				document.getElementById('back').disabled = true;
+				document.getElementById('frwd').disabled = true;
+			}
+
+			function enableAll()
+			{
+				document.getElementById('delete').disabled = false;
+				document.getElementById('move').disabled = false;
+				document.getElementById('move2').disabled = false;
+				document.getElementById('back').disabled = false;
+				document.getElementById('frwd').disabled = false;
+			}
+
+			function inboxLoad()
+			{
+				document.getElementById('delete').innerHTML = "Delete";
+				document.getElementById('move2').style.display="inline";
+				document.getElementById('move').style.display="none";
+				document.getElementById('inbox').style="color : yellow";
+				document.getElementById('important').style="color : red";
+				document.getElementById('trash').style="color : red";
+				enableAll();
+				mailBoxType="Inbox"; 
+				lastRecord=0;
+				loadDoc();
+			}
+			
+			function importantLoad()
+			{
+				document.getElementById('delete').innerHTML = "Delete";
+				document.getElementById('move').style.display="inline";
+				document.getElementById('move2').style.display="none";
+				document.getElementById('inbox').style="color : red";
+				document.getElementById('important').style="color : yellow";
+				document.getElementById('trash').style="color : red";
+				enableAll();
+				lastRecord=0;
+				mailBoxType="Important"; 
+				loadDoc();
+			}
+			function trashLoad()
+			{
+				document.getElementById('delete').innerHTML = "Delete Forever";
+				document.getElementById('move').style.display="inline";
+				document.getElementById('move2').style.display="inline";
+				document.getElementById('inbox').style="color : red";
+				document.getElementById('important').style="color : red";
+				document.getElementById('trash').style="color : yellow";
+				enableAll();
+				lastRecord=0;
+				mailBoxType="Trash"; 
+				loadDoc();
+			}
+			
+					
+			function goFrwd()
+			{
+			     lastRecord=lastRecord+4;
+				  enableAll();
+				  loadDoc();
+		    }
+			
+			function goBack()
+			{
+			    if(lastRecord>=4)
+				{
+				  lastRecord=lastRecord-4;
+				  enableAll();
+				  loadDoc();
+				}
+				else
+				alert("There are no more previous emails :D");
+			}
+			
+			function getContent(email)
+			{
+			    var id=email.getAttribute('id');
+				disableAll();
+				var xmlhttp; 
+				if (window.XMLHttpRequest){ // code for IE7+, Firefox, Chrome,etc. 
+					xmlhttp = new XMLHttpRequest(); 
+				}else{ // code for IE6, IE5 
+				 	xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); 
+				}
+				xmlhttp.onreadystatechange = function(){ 
+				 	if (xmlhttp.readyState == 4 && xmlhttp.status ==200){ 
+				 
+				 	document.getElementById('emailist').innerHTML=xmlhttp.responseText;
+				 	} 
+				}
+				xmlhttp.open("GET","handleContentDisplay.php?id="+id, true);
+				xmlhttp.send();
+			};
+			
+			var counter,moveTo;
+			
+			function change()
+			{
+				var checkBox= document.getElementsByTagName('input');
+				for (var i = 0; i< checkBox.length; i++) 
+				{
+					if(checkBox[i].checked)
+					{
+					    
+						var xmlhttp; 
+						if (window.XMLHttpRequest)
+						{ // code for IE7+, Firefox, Chrome,etc. 
+							xmlhttp = new XMLHttpRequest(); 
+						}
+						else
+						{ // code for IE6, IE5 
+						 	xmlhttp = new ActiveXObject("Microsoft.XMLHTTP"); 
+						}
+						xmlhttp.open("GET","handleMailboxChange.php?id="+checkBox[i].value+"&counter="+counter+"&moveTo="+moveTo, true);
+						xmlhttp.send();
+					}
+					loadDoc();
+				}
+			}
+			
+			 function moveToInbox()
+			{
+			      counter=0;
+				  moveTo="Inbox";
+				  change();
+		    }
+			
+			function moveToImp()
+			{
+			     counter=0;
+				 moveTo="Important";
+				 change();
+			}
+			
+			function deleteMail()
+			{
+			  if(mailBoxType == "Trash")
+			  {  
+			    counter=1;
+				moveTo="tttt";
+			  }
+			  else
+			  {
+			    counter=0;
+				moveTo="Trash";
+			  }
+			  change();
+			}
+				 
+		   		
+    </script>
+	</head>
+	<body onload="inboxLoad()">
+		<div id="heading">
+			<h1>Students's Mail ! :D</h1>
+		</div>
+		<hr><br>
+		<div id="functionbuttons">
+		    <center>
+		    <button id="delete" onclick="deleteMail()">Delete</button>
+			<button id="move" onclick="moveToInbox()">Move to Inbox</button>
+			<button id="move2" onclick="moveToImp()">Move to Important</button>
+			<button id= "back" onclick="goBack()">&lt;</button>
+			<button id="frwd" onclick="goFrwd()">&gt;</button>
+			</center>
+		</div>
+		<br><hr><br>		
+		
+		<center>
+		<div id="mailboxList" style="height:100px;width:120px;float:left;">
+		  	  <ul>
+				    <li id="inbox" onclick="inboxLoad()"> Inbox <br>
+			        <li id="important" onclick="importantLoad()"> Important <br>
+			        <li id="trash" onclick="trashLoad()"> Trash <br>
+			   </ul>
+			</div>
+			<div id="b" style="height:100px;width:120px;float:left;">
+			  
+			</div>
+			<div id="emailist" style="height:100px;width:120px;float:left;">
+			  
+			</div>
+		  
+		</center>
+      </body>
+</html>

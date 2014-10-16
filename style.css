@@ -1,0 +1,51 @@
+body
+{
+ font-family:Bookman Old Style;
+ color:black;
+}
+
+
+h1
+ {
+  font-size: 500%;
+  font-family:Bookman Old Style;
+  text-align:center;
+}
+
+div.mailboxlist
+{
+  font-size:100%;
+}
+
+button
+{
+  background-color:white;
+  border-style:solid;
+  border-width:2px;
+  border-color:black;
+  font-size:120%;
+}
+
+ul
+{
+  list-style-type:square;
+}
+  
+
+table,td
+{
+  text-align:center;
+  cellpadding:100px;
+  cellspacing:100px;
+  border-collapse:collapse;
+  border:5px white;
+  border-style:solid;
+  width:30%;
+}
+
+
+div.mailboxList
+{
+  width:500%;
+}
+
